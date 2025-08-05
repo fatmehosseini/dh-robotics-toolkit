@@ -1,33 +1,40 @@
-
 # 🤖 Symbolic Robotics Engine (Python)
 
-This package provides symbolic tools for modeling, analyzing, and simulating robotic systems using Denavit-Hartenberg (DH) parameters and symbolic math via `sympy`. It supports symbolic forward kinematics, velocities, and accelerations for robotic manipulators.
+This package provides symbolic tools for modeling, analyzing, and visualizing robotic systems using Denavit-Hartenberg (DH) parameters and symbolic math via `sympy`.
 
 ---
 
 ## 📦 Features
 
-- Denavit-Hartenberg modeling (`DHParams`)
-- Symbolic forward kinematics (`compute_forward_kinematics`)
+- DH parameter modeling (`DHParams`)
+- Symbolic forward kinematics
 - Recursive Newton-Euler dynamics:
-  - Angular/linear velocity (`compute_velocities`)
-  - Angular/linear acceleration (`compute_accelerations`)
-- Plug-and-play structure (`RobotModel`)
-- Visualization-ready for plotting robot configurations
-- Fully symbolic using `sympy`
+  - Angular/linear velocity
+  - Angular/linear acceleration
+- Inverse kinematics:
+  - ✅ Analytic for 2R planar robot
+  - ✅ Numerical for 3R spherical robot
+- Visual GUI apps for 2R and 3R using Streamlit
+- Plotting in 2D and 3D
 
 ---
 
-## 🧠 Mathematical Foundation
+## 📘 Mathematical Foundation
 
-We follow **Craig’s formulation** of robotic kinematics and dynamics:
+All formulas follow the conventions in the textbook:
 
-### 1. Denavit-Hartenberg Transformation
+**John J. Craig – Introduction to Robotics: Mechanics and Control**  
+Free online version:  
+[https://marsuniversity.github.io/ece387/Introduction-to-Robotics-Craig.pdf](https://marsuniversity.github.io/ece387/Introduction-to-Robotics-Craig.pdf)
 
-For each link \( i \), the transformation from frame \( i-1 \) to \( i \) is:
+---
+
+## 🧠 Key Equations
+
+### 1. Denavit-Hartenberg (DH) Transformation
 
 \[
-T_i = 
+T_i =
 \begin{bmatrix}
 \cos\theta_i & -\sin\theta_i\cos\alpha_i & \sin\theta_i\sin\alpha_i & a_i\cos\theta_i \\
 \sin\theta_i & \cos\theta_i\cos\alpha_i & -\cos\theta_i\sin\alpha_i & a_i\sin\theta_i \\
@@ -38,54 +45,49 @@ T_i =
 
 **Code**:
 ```python
-T_i = compute_transformation_matrix(dh_params[i])
+T = compute_transformation_matrix(DHParams(...))
 ```
 
 ---
 
 ### 2. Forward Kinematics
 
-Chain all transformations:
-
 \[
-T_0^n = T_1 \cdot T_2 \cdots T_n
+T_0^n = T_1 \cdot T_2 \cdot \dots \cdot T_n
 \]
 
 **Code**:
 ```python
 T_all = compute_forward_kinematics(robot)
-T_end = get_end_effector_pose(robot)
 ```
 
 ---
 
-### 3. Angular Velocity (Recursive)
+### 3. Inverse Kinematics
 
-\[
-\omega_i = R_i^T (\omega_{i-1} + z_{i-1}\dot{\theta}_i)
-\]
+- **2R Planar**: Closed-form solution using trigonometry
+```python
+theta1, theta2 = inverse_kinematics_2R(x, y, a1, a2)
+```
 
-**Code**:
+- **3R Spherical**: Numerical optimization to match target position
+```python
+theta_vals = inverse_kinematics_3R_numeric(robot, target_pos)
+```
+
+---
+
+### 4. Velocity & Acceleration
+
+Recursive Newton-Euler method:
 ```python
 w, v = compute_velocities(robot)
-```
-
----
-
-### 4. Angular Acceleration (Recursive)
-
-\[
-\dot{\omega}_i = R_i^T (\dot{\omega}_{i-1} + z_{i-1}\ddot{\theta}_i + \omega_{i-1} \times z_{i-1} \dot{\theta}_i)
-\]
-
-**Code**:
-```python
 wd, vd = compute_accelerations(robot, w, v)
 ```
 
 ---
 
-## 📁 Folder Structure
+## 📁 Project Structure
 
 ```
 symbolic_robotics/
@@ -94,40 +96,34 @@ symbolic_robotics/
 │   ├── dh_parameters.py
 │   ├── kinematics.py
 │   ├── dynamics.py
+│   ├── inverse_kinematics.py
 │   ├── utils.py
 │   └── __init__.py
 ├── examples/
 │   ├── planar_2R_example.ipynb
-│   └── spherical_3R_example.ipynb
+│   ├── spherical_3R_example.ipynb
+├── app_2R.py
+├── app_3R.py
+└── README.md
 ```
 
 ---
 
-## ✍️ How to Write Your Own Example
+## 🚀 Run the GUI
 
-1. **Define time variable and symbolic joint functions**:
-```python
-from sympy import symbols, Function
-t = symbols('t')
-theta1 = Function('theta1')(t)
+```bash
+streamlit run app_2R.py     # 2R planar arm
+streamlit run app_3R.py     # 3R spherical arm
 ```
 
-2. **Define your DH parameters** using `DHParams`:
+---
+
+## ✍️ Write Your Own Example
+
 ```python
-from symbolic_robotics import DHParams
+from symbolic_robotics import DHParams, RobotModel
 dh1 = DHParams(a=1, alpha=0, d=0, theta=theta1)
-```
-
-3. **Create your robot**:
-```python
-from symbolic_robotics import RobotModel
 robot = RobotModel(n_joints=1, time_var=t, dh_params=[dh1])
-```
-
-4. **Compute transformations**:
-```python
-from symbolic_robotics import compute_forward_kinematics
-T = compute_forward_kinematics(robot)
 ```
 
 ---
@@ -138,7 +134,7 @@ MIT License
 
 ---
 
-## 📬 Contributions
+## 🙌 Acknowledgment
 
-Feel free to open issues or submit pull requests!
-
+Based on the formulations and diagrams from:
+**Craig, John J. — Introduction to Robotics: Mechanics and Control**
