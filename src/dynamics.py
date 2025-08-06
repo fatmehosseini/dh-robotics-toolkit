@@ -1,5 +1,3 @@
-# src/dynamics.py
-
 import sympy as sp
 import numpy as np
 from typing import List

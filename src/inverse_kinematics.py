@@ -1,5 +1,3 @@
-# src/inverse_kinematics.py
-
 import numpy as np
 from typing import Tuple, Optional
 

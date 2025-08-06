@@ -1,5 +1,3 @@
-# src/dh_parameters.py
-
 import sympy as sp
 from dataclasses import dataclass
 

@@ -1,5 +1,3 @@
-# src/utils.py
-
 import sympy as sp
 
 

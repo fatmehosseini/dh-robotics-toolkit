@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sympy import symbols, Function, latex
 import sys
-sys.path.append("../src")  # or the relative path to your src folder
+sys.path.append("../src") 
 from inverse_kinematics import inverse_kinematics_2R
 from sympy import symbols, Function, pi
 from base_robot import RobotModel

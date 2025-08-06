@@ -1,5 +1,3 @@
-# src/kinematics.py
-
 import sympy as sp
 from typing import List
 
